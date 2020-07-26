@@ -5,10 +5,13 @@ package network;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import service.SerachService;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class WebServer {
@@ -16,9 +19,11 @@ public class WebServer {
 
     private final int port;
     private HttpServer server;
+    SerachService service;
 
-    public WebServer(String port) {
+    public WebServer(SerachService service, String port) {
         this.port = Integer.valueOf(port);
+        this.service = service;
     }
 
     public void startServer() {
@@ -28,6 +33,7 @@ public class WebServer {
             e.printStackTrace();
             return;
         }
+        System.out.println("Server listening on port: " + port);
 
         HttpContext searchContext = server.createContext(SEARCH_ENDPOINT);
 
@@ -45,8 +51,17 @@ public class WebServer {
             return;
         }
 
-        String responseMessage = "Server is alive\n";
-        sendResponse(responseMessage.getBytes(), exchange);
+        String query = exchange.getRequestURI().getQuery();
+        System.out.println("query: " + query);
+
+        if(query == null){
+            exchange.close();
+            return;
+        }
+
+        Map<String, String> queryToMap = queryToMap(query);
+
+        sendResponse(service.sendSearchTask(query).getBytes(), exchange);
     }
 
     private void sendResponse(byte[] responseBytes, HttpExchange exchange) throws IOException {
@@ -59,5 +74,18 @@ public class WebServer {
 
     public void stop() {
         server.stop(10);
+    }
+
+    private Map<String, String> queryToMap(String query) {
+        Map<String, String> result = new HashMap<>();
+        for (String param : query.split("&")) {
+            String[] entry = param.split("=");
+            if (entry.length > 1) {
+                result.put(entry[0], entry[1]);
+            }else{
+                result.put(entry[0], "");
+            }
+        }
+        return result;
     }
 }

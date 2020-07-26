@@ -22,21 +22,17 @@ public class LeaderHandler implements Watcher {
     Environment env;
 
     @Autowired
-    Environment environment;
-
-    @Autowired
     CuratorFramework client;
 
     String LEADER_REGISTRY = "/leader";
 
 
-
-
     @EventListener(OnGrantedEvent.class)
     public void start() throws UnknownHostException {
-        System.out.println("leader");
 
         String address = String.format("http://%s:%s", InetAddress.getLocalHost().getCanonicalHostName(), env.getProperty("server.port"));
+        System.out.println("I'm the leader: " + address);
+
         try {
             if(client.checkExists().forPath(LEADER_REGISTRY) == null) {
                 String result = client.create().forPath(LEADER_REGISTRY);
@@ -48,20 +44,11 @@ public class LeaderHandler implements Watcher {
     }
 
 
-    @EventListener(OnFailedToAcquireMutexEvent.class)
-    public void stop() {
-        try {
-            System.out.println("Revokeeee");
-            String address = String.format("http://%s:%s", InetAddress.getLocalHost().getCanonicalHostName(), env.getProperty("server.port"));
-            String node = "/followers/follower"+ "_" + env.getProperty("server.port");
-            final String result = client.create().forPath("/follower"+ "_" + env.getProperty("server.port"));
-            if(client.checkExists().forPath(node) != null) {
-                client.setData().forPath(node, address.getBytes());
-            }
-            client.setData().forPath(node,address.getBytes());
-        } catch (Exception e) {
-            System.out.println("Error when create follower znode: " + e.getStackTrace());
-        }
+    @EventListener(OnRevokedEvent.class)
+    public void stop() throws UnknownHostException {
+        String address = String.format("http://%s:%s", InetAddress.getLocalHost().getCanonicalHostName(), env.getProperty("server.port"));
+        System.out.println("revoke leadership: " + address);
+
     }
 
     @Override

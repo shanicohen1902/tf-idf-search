@@ -23,11 +23,11 @@ public class Main  {
     
     public static void main(String[]args) throws KeeperException, InterruptedException, IOException {
 
-        Properties prop = loadProperties();
-     	WebServer webServer = new WebServer(prop.getProperty("server.port"));
+		Properties prop = loadProperties();
+		SerachService service = new SerachService(prop.getProperty("zookeeper.connection"));
+		WebServer webServer = new WebServer(service,prop.getProperty("server.port"));
      	webServer.startServer();
-     	SerachService service = new SerachService(prop.getProperty("zookeeper.connection")); 
-     	System.out.println(service.getLeaders());    	
+     	System.out.println(service.getLeaders());
 
     }
 
