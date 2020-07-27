@@ -47,7 +47,7 @@ public class WebClient {
 
     public CompletableFuture<String> sendTask(String url, Task task) {
 
-        String requestBody = getJsonOfStringArray(task);
+        String requestBody = getJsonOfObject(task);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
@@ -59,7 +59,7 @@ public class WebClient {
                 .thenApply(HttpResponse::body);
     }
 
-    private String getJsonOfStringArray(Task task) {
+    private String getJsonOfObject(Task task) {
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = null;
         try {

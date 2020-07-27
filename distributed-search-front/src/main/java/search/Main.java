@@ -27,8 +27,6 @@ public class Main  {
 		SerachService service = new SerachService(prop.getProperty("zookeeper.connection"));
 		WebServer webServer = new WebServer(service,prop.getProperty("server.port"));
      	webServer.startServer();
-     	System.out.println(service.getLeaders());
-
     }
 
 	private static Properties loadProperties() throws IOException {

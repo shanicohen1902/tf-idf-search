@@ -4,19 +4,17 @@ import java.util.List;
 
 public class Task {
 
-    public Task() {
-    }
+    private String term;
+    private String[]titles;
+    private String address;
+
+    public Task() { }
 
     public Task(String term, String[] titles, String address) {
         this.term = term;
         this.titles = titles;
         this.address = address;
     }
-
-    private String term;
-    private String[]titles;
-    private String address;
-
 
     public String getTerm() {
         return term;

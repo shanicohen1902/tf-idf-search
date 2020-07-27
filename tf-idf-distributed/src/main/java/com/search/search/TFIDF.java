@@ -29,9 +29,11 @@ package com.search.search;
 import com.search.model.WorkerResult;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TFIDF {
 
+    // TF
     public static double calculateTermFrequency(List<String> words, String term) {
         long count = 0;
         for (String word : words) {
@@ -39,11 +41,10 @@ public class TFIDF {
                 count++;
             }
         }
-
-        double termFrequency = (double) count / words.size();
-        return termFrequency;
+        return (double) count / words.size();
     }
 
+    // IDF
     public static double getInverseDocumentFrequency(String term, Map<String, Double> frequencies) {
         double n = 0;
         for (String title : frequencies.keySet()) {
@@ -53,6 +54,13 @@ public class TFIDF {
             }
         }
         return n == 0 ? 0 : Math.log10(frequencies.size() / n);
+    }
+
+    public static Map<String, Double> tfIdfScores(String term, Map<String, Double> tfs) {
+        double idf = TFIDF.getInverseDocumentFrequency(term,tfs);
+        return tfs.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue() * idf));
     }
 
 }

@@ -45,19 +45,15 @@ public class LeaderService {
 
         List<WorkerResult> results = callBack(futures);
 
-        Map<String, Double> scores = tfIdfScores(term, results);
-
-        System.out.println(String.format("Received %d/%d results", results.size(), workers.size()));
-        LeaderResult result = new LeaderResult(term,scores);
-        return result;
-    }
-
-    private Map<String, Double> tfIdfScores(String term, List<WorkerResult> results) {
         Map<String, Double> tfs = aggregateResults(results, term);
-        double idf = TFIDF.getInverseDocumentFrequency(term,tfs);
-        return tfs.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue() * idf));
+
+        Map<String, Double> scores = TFIDF.tfIdfScores(term, tfs);
+
+        System.out.println(String.format("Received %d/%d results ", results.size(), workers.size()));
+
+        scores = sortMapByValue(scores);
+
+        return new LeaderResult(term,scores);
     }
 
     private List<WorkerResult> callBack(List<CompletableFuture<String>> futures) {
@@ -134,5 +130,11 @@ public class LeaderService {
 
         return seviceAddreses;
 
+    }
+
+    private Map<String, Double> sortMapByValue(Map<String, Double> scores) {
+        return   scores.entrySet().stream()
+                .sorted((Map.Entry.<String, Double>comparingByValue().reversed()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 }

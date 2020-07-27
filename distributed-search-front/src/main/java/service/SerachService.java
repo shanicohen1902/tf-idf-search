@@ -67,11 +67,12 @@ public class SerachService implements Watcher{
 	}
 
 	public String sendSearchTask(String query){
-
     	String leaderAddress = this.getLeaders();
 		String result = null;
+		String url = leaderAddress + "/search?" + query;
+		System.out.println("send massage to: " + url);
 		try {
-			result = webClient.get(leaderAddress + "/result?" + query);
+			result = webClient.get(leaderAddress + "/search?" + query);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

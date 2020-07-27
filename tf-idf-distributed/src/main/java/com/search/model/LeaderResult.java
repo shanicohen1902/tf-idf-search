@@ -4,17 +4,16 @@ import java.util.Map;
 
 public class LeaderResult {
 
-    public LeaderResult() {
-    }
+    private String term;
+
+    private Map<String,Double> scores;
+
+    public LeaderResult() { }
 
     public LeaderResult(String term, Map<String, Double> scores) {
         this.term = term;
         this.scores = scores;
     }
-
-    private String term;
-
-    private Map<String,Double> scores;
 
     public String getTerm() {
         return term;

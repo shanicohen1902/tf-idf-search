@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class WorkerController {
 
     @Autowired
-    WorkerService service;
+    WorkerService workerService;
 
 
     @PostMapping("/frequencies")
     public WorkerResult getFrequencies(@RequestBody Task task) {
-        return service.search(task.getTitles(),task.getTerm());
+        return workerService.search(task.getTitles(),task.getTerm());
     }
 }

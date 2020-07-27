@@ -4,16 +4,15 @@ import java.util.Map;
 
 public class WorkerResult {
 
+    private String term;
+    private Map<String,Double> termFrequency;
+
+    public WorkerResult() { }
+
     public WorkerResult(String term, Map<String, Double> termFrequency) {
         this.term = term;
         this.termFrequency = termFrequency;
     }
-
-    public WorkerResult() {
-    }
-
-    private String term;
-    private Map<String,Double> termFrequency;
 
     public String getTerm() {
         return term;
