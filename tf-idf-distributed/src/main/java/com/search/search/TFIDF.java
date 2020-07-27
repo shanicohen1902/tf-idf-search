@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class TFIDF {
 
-    // TF
+    // TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
     public static double calculateTermFrequency(List<String> words, String term) {
         long count = 0;
         for (String word : words) {
@@ -44,8 +44,8 @@ public class TFIDF {
         return (double) count / words.size();
     }
 
-    // IDF
-    public static double getInverseDocumentFrequency(String term, Map<String, Double> frequencies) {
+    // IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
+    public static double getInverseDocumentFrequency(Map<String, Double> frequencies) {
         double n = 0;
         for (String title : frequencies.keySet()) {
             double termFrequency = frequencies.get(title);
@@ -56,8 +56,7 @@ public class TFIDF {
         return n == 0 ? 0 : Math.log10(frequencies.size() / n);
     }
 
-    public static Map<String, Double> tfIdfScores(String term, Map<String, Double> tfs) {
-        double idf = TFIDF.getInverseDocumentFrequency(term,tfs);
+    public static Map<String, Double> tfIdfScores(double idf, Map<String, Double> tfs) {
         return tfs.entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue() * idf));

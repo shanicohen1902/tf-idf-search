@@ -37,7 +37,7 @@ public class LeaderService {
 
         List<String> workers = getWorkers();
 
-        String[] fileNames = getTitles();
+        String[] fileNames = getTitles(PATH);
 
         List<Task>tasks = buildWorkerTasks(fileNames,workers,term);
 
@@ -45,9 +45,11 @@ public class LeaderService {
 
         List<WorkerResult> results = callBack(futures);
 
-        Map<String, Double> tfs = aggregateResults(results, term);
+        Map<String, Double> tf = aggregateResults(results, term);
 
-        Map<String, Double> scores = TFIDF.tfIdfScores(term, tfs);
+        double idf = TFIDF.getInverseDocumentFrequency(tf);
+
+        Map<String, Double> scores = TFIDF.tfIdfScores(idf, tf);
 
         System.out.println(String.format("Received %d/%d results ", results.size(), workers.size()));
 
@@ -91,7 +93,7 @@ public class LeaderService {
         return tasks;
     }
 
-    private Map<String, Double> aggregateResults(List<WorkerResult> results, String query) {
+    public static Map<String, Double> aggregateResults(List<WorkerResult> results, String query) {
         Map<String,Double> all = results.stream()
                 .map(result -> result.getTermFrequency())
                 .flatMap(freq -> freq.entrySet().stream())
@@ -100,9 +102,10 @@ public class LeaderService {
         return all;
     }
 
-    private List<String[]> splitStringArray(String[] fileNames, int size) {
-        int chunk=fileNames.length / size;//4
+    public static List<String[]> splitStringArray(String[] fileNames, int size) {
         List<String[]> partitions = new ArrayList<>();
+        if(size == 0) return partitions;
+        int chunk=fileNames.length / size;//4
 
         for(int i=0 ; i < size - 1 ; i+=chunk){
             partitions.add(Arrays.copyOfRange(fileNames, i, i + chunk));
@@ -113,7 +116,7 @@ public class LeaderService {
         return partitions;
     }
 
-    private String[] getTitles() {
+    public static String[] getTitles(String PATH) {
         File file = new File(PATH);
         return file.list();
     }
