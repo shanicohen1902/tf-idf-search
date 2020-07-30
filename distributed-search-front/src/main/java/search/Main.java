@@ -1,31 +1,32 @@
 package search;
 
+import network.WebServer;
+import org.apache.zookeeper.KeeperException;
+import service.SerachService;
+
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.Watcher.Event;
-import org.apache.zookeeper.data.Stat;
-
-import network.WebServer;
-import service.SerachService;
 
 public class Main  {
 	
     
-    public static void main(String[]args) throws KeeperException, InterruptedException, IOException {
+    public static void main(String[]args) throws IOException {
+		String zookeeperConnectionString;
+		String serverPort;
+		System.out.println("args: " + args.length);
 
-		Properties prop = loadProperties();
-		SerachService service = new SerachService(prop.getProperty("zookeeper.connection"));
-		WebServer webServer = new WebServer(service,prop.getProperty("server.port"));
+		if (args.length > 0){
+			 zookeeperConnectionString = args[0];
+			 serverPort = args[1];
+		}else{
+			Properties prop = loadProperties();
+			zookeeperConnectionString = prop.getProperty("zookeeper.connection");
+			serverPort = prop.getProperty("server.port");
+		}
+		SerachService service = new SerachService(zookeeperConnectionString);
+		WebServer webServer = new WebServer(service,serverPort);
      	webServer.startServer();
     }
 

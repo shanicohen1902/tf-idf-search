@@ -3,21 +3,17 @@ services:
     zookeeper:
         image: zookeeper
         restart: always
-        volumes:
-            - ./zoo1/data:/data
-            - ./zoo1/datalog:/datalog
         ports:
             - 2181:2181
-        environment:
-            ZOO_MY_ID: 1
-
     microservice:
-        build: ./tf-idf-distributed
-        ports:
-          - "8083:8083"
-        volumes:
-            - ./ms1/.m2:/root/.m2
+        build: tf-idf-distributed/
         links:
-          - zookeeper
-        depends_on:
-          - zookeeper
+            - "zookeeper:zookeeper"
+        ports:
+            - "8083-8085:8083"
+    front-end:
+        build: distributed-search-front/
+        links:
+            - "zookeeper:zookeeper"
+        ports:
+            - "8087:8087"
