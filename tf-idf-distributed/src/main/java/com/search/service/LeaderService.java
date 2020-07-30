@@ -86,7 +86,7 @@ public class LeaderService {
 
         List<String[]> fileNamesChunks = splitStringArray(fileNames,workers.size());
         List<Task> tasks = new ArrayList<>();
-        for(int i=0;i<workers.size();i++){
+        for(int i=0;i<fileNamesChunks.size();i++){
             Task task = new Task(term,fileNamesChunks.get(i),workers.get(i));
             tasks.add(task);
         }

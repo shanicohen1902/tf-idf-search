@@ -35,7 +35,7 @@ public class LeaderHandler implements Watcher {
 
         try {
             if(client.checkExists().forPath(LEADER_REGISTRY) == null) {
-                String result = client.create().forPath(LEADER_REGISTRY);
+                 client.create().withMode(CreateMode.EPHEMERAL).forPath(LEADER_REGISTRY);
             }
             client.setData().forPath(LEADER_REGISTRY,address.getBytes());
         } catch (Exception e) {
