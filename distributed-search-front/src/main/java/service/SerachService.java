@@ -23,7 +23,9 @@ public class SerachService implements Watcher{
     
     public SerachService(String connectionString) throws IOException {
     	zooKeeperAddress = connectionString;
+    	System.out.println("conn " + connectionString);
    	 	zooKeeper = new ZooKeeper(zooKeeperAddress, SESSION_TIMEOUT, this);
+   	 	System.out.println("state: " + zooKeeper.getState());
 		webClient = new WebClient();
     }
 	

@@ -13,20 +13,25 @@ public class Main  {
 	
     
     public static void main(String[]args) throws IOException {
-		String zookeeperConnectionString;
-		String serverPort;
-		System.out.println("args: " + args.length);
+		String zookeeperConnectionString = "";
+		String serverPort = "";
+		System.out.println("argsu: " + args.length);
 
-		if (args.length > 0){
-			 zookeeperConnectionString = args[0];
-			 serverPort = args[1];
-		}else{
+		if(System.getenv("ZOO_ADDRESS") != null){
+			System.out.println("sys prp " + System.getenv("ZOO_ADDRESS"));
+			zookeeperConnectionString = System.getenv("ZOO_ADDRESS");
+			serverPort = "8080";
+		}	else if (args.length > 0){
+			zookeeperConnectionString = args[0];
+			serverPort = args[1];
+		} else if(loadProperties() != null){
 			Properties prop = loadProperties();
 			zookeeperConnectionString = prop.getProperty("zookeeper.connection");
 			serverPort = prop.getProperty("server.port");
 		}
+		System.out.println("nnn " + zookeeperConnectionString);
 		SerachService service = new SerachService(zookeeperConnectionString);
-		WebServer webServer = new WebServer(service,serverPort);
+		WebServer webServer = new WebServer(service , serverPort);
      	webServer.startServer();
     }
 

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+        tier: backend
+    spec:
+      containers:
+        - name: zoo-node
+          image: zookeeper
+        # - name: ...
+        #   image: ...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: worker
+        tier: backend
+    spec:
+      containers:
+        - name: worker-node
+          image: shanicohen/tf-itf-worker:latest
+          imagePullPolicy: "Always"
+          command: ["java","-jar","tf-idf-distributed-0.0.1-SNAPSHOT.jar","--spring.cloud.zookeeper.connectString=zoo-service.default"]

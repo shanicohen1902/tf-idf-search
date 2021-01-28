@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -128,11 +130,20 @@ public class LeaderService {
         seviceAddreses = list
                 .stream()
                 .map(instance -> instance.getUri().toString())
-                .filter(address -> !address.contains(env.getProperty("server.port")))
+                .filter(address -> !address.contains(getCanonicalHostName()))
                 .collect(Collectors.toList());
 
         return seviceAddreses;
 
+    }
+
+    private String getCanonicalHostName() {
+        try {
+            return InetAddress.getLocalHost().getCanonicalHostName();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private Map<String, Double> sortMapByValue(Map<String, Double> scores) {
