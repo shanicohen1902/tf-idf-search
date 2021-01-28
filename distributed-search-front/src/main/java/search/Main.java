@@ -15,7 +15,7 @@ public class Main  {
     public static void main(String[]args) throws IOException {
 		String zookeeperConnectionString = "";
 		String serverPort = "";
-		System.out.println("argsu: " + args.length);
+		System.out.println("args: " + args.length);
 
 		if(System.getenv("ZOO_ADDRESS") != null){
 			System.out.println("sys prp " + System.getenv("ZOO_ADDRESS"));

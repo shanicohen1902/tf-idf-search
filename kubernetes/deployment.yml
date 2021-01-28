@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+        tier: backend
+    spec:
+      containers:
+        - name: zoo-node
+          image: zookeeper
+        # - name: ...
+        #   image: ...
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+        tier: frontend
+    spec:
+      containers:
+        - name: frontend-node
+          image: shanicohen/tf-itf-front:latest
+          imagePullPolicy: "Always"
+          env:
+            - name: ZOO_ADDRESS
+              value: "zoo-service.default"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: backend
+spec:
+  selector:
+    matchLabels:
+      app: worker
+  serviceName: "backend"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: worker-node
+          image: shanicohen/tf-itf-worker:latest
+          imagePullPolicy: "Always"
+          command: ["java","-jar","tf-idf-distributed-0.0.1-SNAPSHOT.jar","--spring.cloud.zookeeper.connectString=zoo-service.default"]
+          volumeMounts:
+            #- mountPath: ./resources
+            - mountPath: ./data
+              name: books-volume
+      volumes:
+        - name: books-volume
+          persistentVolumeClaim:
+            claimName: books-volume-claim
