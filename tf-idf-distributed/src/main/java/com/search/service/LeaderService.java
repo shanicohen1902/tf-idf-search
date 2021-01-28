@@ -133,6 +133,7 @@ public class LeaderService {
                 .filter(address -> !address.contains(getCanonicalHostName()))
                 .collect(Collectors.toList());
 
+        System.out.println("workers: " + seviceAddreses);
         return seviceAddreses;
 
     }
