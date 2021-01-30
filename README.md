@@ -16,6 +16,10 @@ docker-compose up
 ## scale
 docker-compose scale microservice=2 (or 3...)
 
+## Run with kubernetes + minikube
+kubectl apply -f kubernetes/  
+minikube service frontend
+
 ## Usage 
 Rest get request:  
 host-name:8087/search?term=term_to_search
